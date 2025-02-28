@@ -1,0 +1,10 @@
+{# index_client.html #}
+
+<h1>Это index_client.html</h1>
+{% if customer %}
+    <h2>Найденный клиент:</h2>
+    <p>ID: {{ customer.id }}</p>
+    <p>Имя: {{ customer.name }}</p>
+    <p>Фамилия: {{ customer.surname }}</p>
+    <p>Паспорт: {{ customer.passport_data }}</p>
+{% endif %}
