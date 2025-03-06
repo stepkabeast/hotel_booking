@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-class BookingPreparation(ABC):
+class BookingPreparation:
 
     """
     Интерфейс предварительной обработки данных
