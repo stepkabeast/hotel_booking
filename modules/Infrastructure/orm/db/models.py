@@ -25,4 +25,4 @@ class Booking(models.Model):
     #surname = Customer.surname
     check_in_date = models.DateField()
     check_out_date = models.DateField()
-    room = models.CharField(max_length=10, choices=Room.CATEGORIES)
+    room = models.CharField(max_length=10, choices=Room.categories)
