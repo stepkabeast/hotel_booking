@@ -2,11 +2,7 @@ from typing import Tuple
 
 
 class Room:
-    BASE = 'Base'
-    LUX = 'Luxury'
-    PREMIUM = 'Premium'
-    
-    CATEGORIES = [BASE, LUX, PREMIUM]
+    CATEGORIES = [('BASE', 'Base'), ('LUX', 'Lux'), ('PREMIUM', 'Premium')]
 
     category: str
     number: Tuple
