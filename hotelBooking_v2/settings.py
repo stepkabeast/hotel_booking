@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'modules.Infrastructure.orm.db.apps.DbConfig',
-    'crud_app.apps.CrudAppConfig'
 ]
 
 MIDDLEWARE = [
