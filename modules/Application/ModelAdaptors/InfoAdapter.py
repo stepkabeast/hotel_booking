@@ -1,43 +1,73 @@
-import sqlite3
-from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
-from typing import Dict, Any
-from modules.Entities.Customer import Customer
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 
-class InfoAdapter(BookingPreparation):
+class BookingRepository(ABC):
+    """
+    Абстрактный класс для выполнения CRUD-операций с базой данных.
+    """
 
-    data = None
+    @abstractmethod
+    def create(self, data: Dict[str, Any]) -> int:
+        """
+        Создает новую запись в базе данных.
 
-    def __init__(self, data):
-        self.data = data
+        Args:
+            data: Словарь, содержащий данные для создания записи.
 
-    def get_customer_info(self, name: str, surname: str) -> Dict[str, Any] | None:
-        try:
-            conn = sqlite3.connect("db.sqlite3")  # Подключение к базе данных
-            cursor = conn.cursor()
+        Returns:
+            Идентификатор созданной записи.
+        """
+        pass
 
-            cursor.execute("SELECT * FROM db_customer WHERE name = ? AND surname = ?", (name, surname))
-            row = cursor.fetchone()
+    @abstractmethod
+    def read(self, id: int) -> Optional[Dict[str, Any]]:
+        """
+        Получает запись из базы данных по идентификатору.
 
-            conn.close()
+        Args:
+            id: Идентификатор записи.
 
-            if row:
-                # Создаем экземпляр Customer из полученных данных
-                customer = Customer(
-                    gender=row[1],
-                    age=row[2],
-                    passport_id=row[3],
-                    name=row[4],
-                    surname=row[5]
-                )
-                return {
-                    #"id": customer.id,
-                    "name": customer.name,
-                    "surname": customer.surname,
-                    "passport_data": customer.passport_id
-                }
-            else:
-                return None  # Клиент не найден
+        Returns:
+            Словарь, содержащий данные записи, или None, если запись не найдена.
+        """
+        pass
 
-        except sqlite3.Error as e:
-            print(f"Ошибка базы данных: {e}")
-            return None  # Ошибка базы данных
+    @abstractmethod
+    def update(self, id: int, data: Dict[str, Any]) -> bool:
+        """
+        Обновляет запись в базе данных по идентификатору.
+
+        Args:
+            id: Идентификатор записи.
+            data: Словарь, содержащий данные для обновления записи.
+
+        Returns:
+            True, если запись успешно обновлена, False в противном случае.
+        """
+        pass
+
+    @abstractmethod
+    def delete(self, id: int) -> bool:
+        """
+        Удаляет запись из базы данных по идентификатору.
+
+        Args:
+            id: Идентификатор записи.
+
+        Returns:
+            True, если запись успешно удалена, False в противном случае.
+        """
+        pass
+
+    @abstractmethod
+    def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """
+        Получает список записей из базы данных с возможностью фильтрации.
+
+        Args:
+            filters: Словарь, содержащий условия фильтрации.
+
+        Returns:
+            Список словарей, содержащих данные записей.
+        """
+        pass
