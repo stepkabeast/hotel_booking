@@ -2,8 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Создание бронирования</title>
+    <title>Бронирование</title>
+    <h1>Бронирование</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Имя:</label>
+        <input type="text" name="name" id="name"><br><br>
 
+        <label for="surname">Фамилия:</label>
+        <input type="text" name="surname" id="surname"><br><br>
+
+        <label for="surname">Возраст:</label>
+        <input type="text" name="age" id="age"><br><br>
+
+         <label for="surname">Паспорт:</label>
+        <input type="text" name="surname" id="surname"><br><br>
+
+        <button type="submit">Добавить</button>
+    </form>
 </head>
 <body>
 
