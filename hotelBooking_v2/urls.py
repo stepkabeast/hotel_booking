@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from booking.views import get_index_view
+from booking.views import get_index_view, index, create_booking
 urlpatterns = [
     path("admin/", admin.site.urls),
-path("", get_index_view, name="customer_info"),
-    path("", get_index_view, name="index"), # Изменено имя маршрута
+    path("info", get_index_view, name="customer_info"),
+    #path("/info", get_index_view, name="index"), # Изменено имя маршрута
+    path("", index, name="index"),
+    path("booking", create_booking, name="create_booking"),
 
 ]
