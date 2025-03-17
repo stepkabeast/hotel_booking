@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from modules.Application.ModelAdaptors.InfoAdapter import InfoAdapter
+from modules.Infrastructure.orm.booking.booking_manage import BookingManager, InfoAdapter
 from modules.Domain.Services.PaymentBookingService import PaymentService
 from modules.Domain.Services.PaymentBookingService import PaymentBookingService
 
@@ -29,4 +29,12 @@ def get_index_view(request):
     if customer_data:
         return render(request, "index_client.html", {"customer": customer_data})
 
-    return render(request, "index.html", {"error": error_message})  # Передаем сообщение об ошибке в шаблон
+    return render(request, "client_info.html", {"error": error_message})  # Передаем сообщение об ошибке в шаблон
+
+def create_booking(request):
+    if request.method == "POST":
+        pass
+    return render(request, template_name="booking/create_booking.html")
+
+def index(request):
+    return  render(request, "index.html")
