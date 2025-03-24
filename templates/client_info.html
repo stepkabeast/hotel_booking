@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Информация о клиенте</title>
+    <title>Поиск клиента</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Информация о клиенте</h1>
+    <div class="container">
+        <h1>Поиск клиента</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        <label for="name">Имя:</label>
-        <input type="text" name="name" id="name"><br><br>
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
 
-        <label for="surname">Фамилия:</label>
-        <input type="text" name="surname" id="surname"><br><br>
+        <form method="post">
+            {% csrf_token %}
 
-        <button type="submit">Найти</button>
-    </form>
+            <!-- Поля формы -->
+            <div class="form-group">
+                <label>Имя:</label>
+                <input type="text" name="name" required>
+            </div>
 
-    {% if customer %}
-        <h2>Найденный клиент:</h2>
-        <p>ID: {{ customer.id }}</p>
-        <p>Имя: {{ customer.name }}</p>
-        <p>Фамилия: {{ customer.surname }}</p>
-        <p>Паспорт: {{ customer.passport_data }}</p>
-    {% elif error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+            <div class="form-group">
+                <label>Фамилия:</label>
+                <input type="text" name="surname" required>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Найти</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">На главную</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
