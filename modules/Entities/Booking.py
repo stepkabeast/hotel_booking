@@ -1,6 +1,6 @@
-from modules.Entities.Customer import Customer
-from modules.Entities.Room import Room
 from enum import Enum
+from datetime import date
+
 
 class BookingStatus(str, Enum):
     WAITING = 'waiting'
@@ -9,42 +9,41 @@ class BookingStatus(str, Enum):
     EVICTED = 'evicted'
 
 
+def determine_booking_status(check_in: date, check_out: date) -> BookingStatus:
+    today = date.today()
+
+    if check_in > check_out:
+        raise ValueError("Дата выезда не может быть раньше даты заезда")
+
+    if today >= check_in and today <= check_out:
+        return BookingStatus.SETTLED
+    elif today < check_in:
+        return BookingStatus.WAITING
+    else:
+        return BookingStatus.EVICTED
+
+
+
+
 class Booking:
+    def __init__(self, customer, room, check_in_date, check_out_date,
+                 status: BookingStatus, breakfast=False, product_intolerance=None):
+        if check_in_date >= check_out_date:
+            raise ValueError("Дата выезда должна быть позже даты заезда")
 
-    status: BookingStatus
-    customer: Customer | None
-    room: Room
-    check_in_date: str
-    check_out_date: str
-    breakfast: bool | None = None
-    product_intolerance: list | None = None
+        if not isinstance(status, BookingStatus):
+            raise TypeError("Некорректный статус бронирования")
 
-
-    def __init__(
-            self,
-            status: BookingStatus,
-            customer: Customer | None,
-            room: Room | None,
-            check_in_date: str,
-            check_out_date: str,
-            breakfast: bool | None = None,
-    ):
-        if breakfast:
-            self.product_intolerance = breakfast
-        self.status = status
         self.customer = customer
         self.room = room
         self.check_in_date = check_in_date
         self.check_out_date = check_out_date
+        self.status = status
+        self.breakfast = breakfast
+        self.product_intolerance = product_intolerance or []
 
     def check_room(self, number) -> bool:
         if (number == self.room.number) and (self.status == BookingStatus.WAITING):
             return True
         else:
             return False
-
-
-
-
-
-
