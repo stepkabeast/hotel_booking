@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-class BookingPreparation:
 
-    """
-    Интерфейс предварительной обработки данных
-    """
+class BookingPreparation(ABC):
+    """Интерфейс для получения информации о клиенте."""
 
     @abstractmethod
     def get_customer_info(self, name: str, surname: str) -> Dict[str, Any]:
+        """Возвращает информацию о клиенте в виде словаря."""
         raise NotImplementedError
