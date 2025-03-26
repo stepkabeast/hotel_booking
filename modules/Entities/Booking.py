@@ -12,8 +12,6 @@ class BookingStatus(str, Enum):
 
 def determine_booking_status(check_in: date, check_out: date) -> BookingStatus:
     today = date.today()
-    print('Тип данных today: ', type(today))
-    print('Тип данных check_in: ', type(check_in))
 
     if check_in > check_out:
         raise ValueError("Дата выезда не может быть раньше даты заезда")
