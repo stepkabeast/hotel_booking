@@ -9,11 +9,6 @@ class BookingRepository(ABC):
     @abstractmethod
     def create(self, data: Dict[str, Any]) -> int:
         """
-        Создает новую запись в базе данных.
-
-        Args:
-            data: Словарь, содержащий данные для создания записи.
-
         Returns:
             Идентификатор созданной записи.
         """
