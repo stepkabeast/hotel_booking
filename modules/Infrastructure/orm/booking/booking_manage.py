@@ -1,13 +1,12 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
 from django.core.exceptions import ObjectDoesNotExist
 from modules.Infrastructure.orm.db.models import Booking as BookingModel, Customer as CustomerModel, Room as RoomModel
 from modules.Application.ModelAdaptors.InfoAdapter import BookingRepository
-import sqlite3
-
+from django.db.models import Q
 
 class InfoAdapter(BookingPreparation):
-    """Адаптер для работы с данными клиента."""
+    """Адаптер для проверки предварительной информации для бронирования."""
 
     def get_customer_info(self, name: str, surname: str) -> Dict[str, Any]:
         try:
@@ -25,6 +24,13 @@ class InfoAdapter(BookingPreparation):
         except Exception as e:
             raise ValueError(f"Ошибка базы данных: {str(e)}")
 
+    def check_rooms(self)->List[int]:
+        try:
+            bookings = BookingModel.objects.filter(status='evicted').values_list('room_id', flat=True)
+            return bookings
+        except ObjectDoesNotExist:
+            raise ValueError("Не удалось получить список свободных номеров")
+
 
 class DjangoBookingRepository(BookingRepository):
     """
@@ -32,25 +38,6 @@ class DjangoBookingRepository(BookingRepository):
     """
 
     def create(self, data: Dict[str, Any]) -> int:
-        """
-        Создает новую запись бронирования в базе данных.
-
-        Args:
-            data: Словарь с данными для создания бронирования. Ожидаемые ключи:
-                - customer: Dict[str, Any] (данные клиента)
-                - room: Dict[str, Any] (данные комнаты)
-                - check_in_date: str (дата заезда)
-                - check_out_date: str (дата выезда)
-                - status: str (статус бронирования)
-                - breakfast: bool (включен ли завтрак)
-                - product_intolerance: List[str] (список непереносимостей)
-
-        Returns:
-            int: Идентификатор созданной записи бронирования.
-
-        Raises:
-            ValueError: Если данные некорректны или комната не найдена.
-        """
         try:
             # Сохраняем или обновляем клиента
             customer_data = data["customer"]

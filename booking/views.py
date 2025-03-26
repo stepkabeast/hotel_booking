@@ -2,12 +2,13 @@ from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from modules.Infrastructure.orm.booking.booking_manage import DjangoBookingRepository, InfoAdapter
 from modules.Domain.Services.PaymentBookingService import PaymentService
 from modules.Domain.Services.PaymentBookingService import PaymentBookingService
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from modules.Entities.Customer import Customer
 from modules.Entities.Booking import Booking, BookingStatus, determine_booking_status
 from modules.Entities.Room import Room
@@ -79,15 +80,11 @@ def create_booking(request: HttpRequest):
             }
 
             # Парсим даты
-            check_in = datetime.strptime(
-                request.POST["check_in_date"],
-                "%d.%m.%Y"
-            ).date()
+            check_in_str = request.POST.get("check_in_date")
+            check_out_str = request.POST.get("check_out_date")
 
-            check_out = datetime.strptime(
-                request.POST["check_out_date"],
-                "%d.%m.%Y"
-            ).date()
+            check_in = date.fromisoformat(check_in_str)
+            check_out = date.fromisoformat(check_out_str)
 
             # Определяем статус бронирования
             status = determine_booking_status(check_in, check_out)
@@ -171,5 +168,20 @@ def booking_success(request, booking_id):
     return render(request, "booking/success.html", {
         "booking_id": booking_id
     })
+
+
+
+@csrf_exempt
+def check_rooms(request):
+    if request.method == 'GET':
+        try:
+            adapter = InfoAdapter()
+            bookings = adapter.check_rooms()
+            return JsonResponse(list(bookings), safe=False)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
 def index(request):
     return  render(request, "index.html")

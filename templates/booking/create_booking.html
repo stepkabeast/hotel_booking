@@ -49,19 +49,24 @@
             <!-- Даты -->
             <div class="form-group">
                 <label>Дата заезда:</label>
-                <input type="text" name="check_in_date" placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}" required>
+                <input type="date" name="check_in_date" placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}" required>
             </div>
 
             <div class="form-group">
                 <label>Дата выезда:</label>
-                <input type="text" name="check_out_date" placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}" required>
+                <input type="date" name="check_out_date" placeholder="дд.мм.гггг" pattern="\d{2}\.\d{2}\.\d{4}" required>
             </div>
 
+            <button id="check-button">Проверить свободные номера</button>
+            <ul id="rooms-list"></ul>
+
+            <script src="{% static 'js/ajax.js' %}"></script>
+
             <!-- Комната -->
-            <div class="form-group">
-                <label>Номер комнаты:</label>
-                <input type="text" name="room_number" required>
-            </div>
+{#            <div class="form-group">#}
+{#                <label>Номер комнаты:</label>#}
+{#                <input type="text" name="room_number" required>#}
+{#            </div>#}
 
             <div class="form-group">
                 <label>Категория номера:</label>
