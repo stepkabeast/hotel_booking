@@ -3,7 +3,8 @@ from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
 from django.core.exceptions import ObjectDoesNotExist
 from modules.Infrastructure.orm.db.models import Booking as BookingModel, Customer as CustomerModel, Room as RoomModel
 from modules.Application.ModelAdaptors.InfoAdapter import BookingRepository
-from django.db.models import Q
+from django.db.models import Q, F
+
 
 class InfoAdapter(BookingPreparation):
     """Адаптер для проверки предварительной информации для бронирования."""
@@ -24,9 +25,18 @@ class InfoAdapter(BookingPreparation):
         except Exception as e:
             raise ValueError(f"Ошибка базы данных: {str(e)}")
 
-    def check_rooms(self)->List[int]:
+    def check_rooms(self, category:str)->List[int]:
         try:
-            bookings = BookingModel.objects.filter(status='evicted').values_list('room_id', flat=True)
+            bookings = BookingModel.objects.filter(
+                status='waiting',
+                room__category=category,
+            ).annotate(
+                room_category=F('room__category'),
+                room_number = F('room__number')
+            ).values(
+                'id', 'check_in_date', 'check_out_date', 'room_id', 'customer_id',
+                'breakfast', 'product_intolerance', 'status', 'room_category', 'room_number'
+            )
             return bookings
         except ObjectDoesNotExist:
             raise ValueError("Не удалось получить список свободных номеров")

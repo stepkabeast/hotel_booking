@@ -11,6 +11,6 @@ class BookingPreparation(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def check_rooms(self) -> List[int]:
+    def check_rooms(self, category: str) -> List[int]:
         """Возвращает информацию о статусе номеров"""
         pass

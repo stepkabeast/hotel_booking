@@ -175,12 +175,17 @@ def booking_success(request, booking_id):
 def check_rooms(request):
     if request.method == 'GET':
         try:
+            category = request.GET.get('category')
+            if not category:
+                return JsonResponse({"error": "Category parameter is required."}, status=400)
             adapter = InfoAdapter()
-            bookings = adapter.check_rooms()
+            bookings = adapter.check_rooms(category)
+            print(category)
+            print(bookings)
             return JsonResponse(list(bookings), safe=False)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Method not allowed"}, status=405)
+    return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
 def index(request):
