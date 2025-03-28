@@ -87,3 +87,47 @@ class DjangoBookingRepository(BookingRepository):
             raise ValueError("Комната не найдена")
         except Exception as e:
             raise ValueError(f"Ошибка при создании бронирования: {str(e)}")
+
+    def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        queryset = BookingModel.objects.all().select_related('customer', 'room').prefetch_related(
+            Prefetch('customer', queryset=CustomerModel.objects.only('name', 'surname')),
+            Prefetch('room', queryset=RoomModel.objects.only('number', 'category'))
+        )
+
+        if filters:
+            conditions = []
+
+            # Фильтрация по клиенту
+            if 'customer' in filters:
+                conditions.append(Q(customer__id=filters['customer']))
+
+            # Фильтрация по номеру комнаты
+            if 'room' in filters:
+                conditions.append(Q(room__id=filters['room']))
+
+            # Фильтрация по дате заселения
+            if 'check_in_date' in filters:
+                conditions.append(Q(check_in_date__gte=filters['check_in_date']))
+
+            # Фильтрация по дате выселения
+            if 'check_out_date' in filters:
+                conditions.append(Q(check_out_date__lte=filters['check_out_date']))
+
+            # Фильтрация по статусу бронирования
+            if 'status' in filters:
+                conditions.append(Q(status=filters['status']))
+
+            # Применение условий фильтрации
+            if conditions:
+                queryset = queryset.filter(*conditions)
+
+        # Преобразование QuerySet в список словарей
+        bookings = list(queryset.values(
+            'id', 'check_in_date', 'check_out_date', 'status', 'breakfast', 'product_intolerance',
+            customer_name=F('customer__name'),
+            customer_surname=F('customer__surname'),
+            room_number=F('room__number'),
+            room_category=F('room__category')
+        ))
+
+        return bookings
