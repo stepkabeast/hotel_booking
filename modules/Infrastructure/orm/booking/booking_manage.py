@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
 from django.core.exceptions import ObjectDoesNotExist
 from modules.Infrastructure.orm.db.models import Booking as BookingModel, Customer as CustomerModel, Room as RoomModel

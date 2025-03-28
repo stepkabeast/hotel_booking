@@ -1,6 +1,3 @@
-from typing import Dict, Any
-
-
 class Room:
     CATEGORIES = [('BASE', 'Base'), ('LUX', 'Lux'), ('PREMIUM', 'Premium')]
 
