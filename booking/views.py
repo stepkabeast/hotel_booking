@@ -1,20 +1,25 @@
 from datetime import datetime
 
+from django.contrib.auth import logout
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from modules.Infrastructure.orm.booking.booking_manage import DjangoBookingRepository, InfoAdapter
 from modules.Domain.Services.PaymentBookingService import PaymentService
 from modules.Domain.Services.PaymentBookingService import PaymentBookingService
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseRedirect
 from modules.Entities.Customer import Customer
 from modules.Entities.Booking import Booking, BookingStatus, determine_booking_status
 from modules.Entities.Room import Room
 from modules.Infrastructure.orm.booking.booking_manage import DjangoBookingRepository
 from modules.Infrastructure.orm.db.models import Room as RoomModel
 from datetime import date
+from django.urls import reverse_lazy
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic.edit import CreateView
 def get_index_view(request):
     """Обработчик для поиска клиента."""
     error_message = None
@@ -190,3 +195,17 @@ def check_rooms(request):
 
 def index(request):
     return  render(request, "index.html")
+
+def home(request):
+    return render(request,"home.html")
+
+
+class SignUp(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy("login")
+    template_name = "registration/signup.html"
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)  # Выход из аккаунта
+        return HttpResponseRedirect(reverse_lazy('login'))
