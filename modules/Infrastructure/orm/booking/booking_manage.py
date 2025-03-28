@@ -3,7 +3,7 @@ from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
 from django.core.exceptions import ObjectDoesNotExist
 from modules.Infrastructure.orm.db.models import Booking as BookingModel, Customer as CustomerModel, Room as RoomModel
 from modules.Application.ModelAdaptors.InfoAdapter import BookingRepository
-from django.db.models import Q, F
+from django.db.models import Q, F, Prefetch
 
 
 class InfoAdapter(BookingPreparation):
