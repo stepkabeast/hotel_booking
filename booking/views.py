@@ -50,21 +50,17 @@ def get_index_view(request):
         if error_message:
             request.session["error_message"] = error_message
 
-        # GET-запрос: извлечение данных из сессии
-        customer_data = request.session.pop("customer_data", None)
-        error_message = request.session.pop("error_message", None)
+    # Извлечение данных из сессии (независимо от типа запроса)
+    customer_data = request.session.pop("customer_data", None)
+    error_message = request.session.pop("error_message", None)
 
-        context = {
-            "customer": customer_data,
-            "error": error_message
-        }
-
-        # Выбор шаблона
-        template = "index_client.html"
-        return render(request, template, context)
-    else:
-        template = "client_info.html"
-        return render(request, template)
+    customer = {
+        "customer": customer_data,
+        "error": error_message
+    }
+    # Выбор шаблона
+    template = "index_client.html"
+    return render(request, template, customer)
 
 def create_booking(request: HttpRequest):
     if request.method == "POST":
@@ -193,6 +189,15 @@ def check_rooms(request):
     return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
+def booking_list_view(request):
+    repository = DjangoBookingRepository()
+    bookings = repository.list()
+    context = {
+        'bookings': bookings
+    }
+    return render(request, 'booking/booking_manager.html', context)
+
+# @login_required(login_url='/login/')
 def index(request):
     return  render(request, "index.html")
 
@@ -207,5 +212,5 @@ class SignUp(CreateView):
 
 class LogoutView(View):
     def get(self, request):
-        logout(request)  # Выход из аккаунта
+        logout(request)
         return HttpResponseRedirect(reverse_lazy('login'))
