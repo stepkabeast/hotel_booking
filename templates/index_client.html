@@ -2,16 +2,41 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 <div class="container">
-    <h1>Информация о клиенте</h1>
-
     {% if customer %}
-    <div class="client-info">
-        <h2>Найденный клиент:</h2>
-        <p>ID: {{ customer.id }}</p>
-        <p>Имя: {{ customer.name }}</p>
-        <p>Фамилия: {{ customer.surname }}</p>
-        <p>Паспорт: {{ customer.passport_id }}</p>
-    </div>
+        <h1>Информация о клиенте</h1>
+        <div class="client-info">
+            <h2>Найденный клиент:</h2>
+            <p>ID: {{ customer.id }}</p>
+            <p>Имя: {{ customer.name }}</p>
+            <p>Фамилия: {{ customer.surname }}</p>
+            <p>Паспорт: {{ customer.passport_id }}</p>
+        </div>
+    {% else %}
+     <h1>Поиск клиента</h1>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Поля формы -->
+            <div class="form-group">
+                <label>Имя:</label>
+                <input type="text" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Фамилия:</label>
+                <input type="text" name="surname" required>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Найти</button>
+            </div>
+        </form>
     {% endif %}
     <div class="button-group">
         <a href="{% url 'index' %}" class="btn btn-secondary">На главную</a>

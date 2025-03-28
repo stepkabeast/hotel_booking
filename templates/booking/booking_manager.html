@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список Бронирований</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        <h1>Список Бронирований</h1>
+        <a href="{% url 'index' %}" class="btn btn-secondary">На главную</a>
+
+        {% if bookings %}
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Клиент</th>
+                        <th>Комната</th>
+                        <th>Дата Заселения</th>
+                        <th>Дата Выселения</th>
+                        <th>Статус</th>
+                        <th>Завтрак</th>
+                        <th>Непереносимость Продуктов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.customer_name }} {{ booking.customer_surname }}</td>
+                            <td>{{ booking.room_number }} ({{ booking.room_category }})</td>
+                            <td>{{ booking.check_in_date|date:"d-m-Y" }}</td>
+                            <td>{{ booking.check_out_date|date:"d-m-Y" }}</td>
+                            <td>{{ booking.status }}</td>
+                            <td>{{ booking.breakfast|yesno:"Да,Нет" }}</td>
+                            <td>{{ booking.product_intolerance }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Нет активных бронирований.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

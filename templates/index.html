@@ -8,12 +8,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Система управления бронированиями</h1>
+        {% if user.is_authenticated %}
+            <h1>Система управления бронированиями</h1>
 
-        <div class="button-block">
-            <a href="{% url 'customer_info' %}" class="btn">Поиск клиента</a>
-            <a href="{% url 'create_booking' %}" class="btn">Создать бронь</a>
-        </div>
+            <div class="button-block">
+                <a href="{% url 'customer_info' %}" class="btn">Поиск клиента</a>
+                <a href="{% url 'create_booking' %}" class="btn">Создать бронь</a>
+            </div>
+
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        {% else %}
+            <a href="{% url 'signup' %}">Sign Up</a>
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
     </div>
 </body>
 </html>
