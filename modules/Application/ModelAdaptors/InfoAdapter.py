@@ -54,15 +54,15 @@ class BookingRepository(ABC):
     #     """
     #     pass
 
-    # @abstractmethod
-    # def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-    #     """
-    #     Получает список записей из базы данных с возможностью фильтрации.
-    #
-    #     Args:
-    #         filters: Словарь, содержащий условия фильтрации.
-    #
-    #     Returns:
-    #         Список словарей, содержащих данные записей.
-    #     """
-    #     pass
+    @abstractmethod
+    def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """
+        Получает список записей из базы данных с возможностью фильтрации.
+
+        Args:
+            filters: Словарь, содержащий условия фильтрации.
+
+        Returns:
+            Список словарей, содержащих данные записей.
+        """
+        pass
