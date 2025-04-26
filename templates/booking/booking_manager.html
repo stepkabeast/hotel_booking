@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="container">
-
         <h1>Список Бронирований</h1>
         <a href="{% url 'index' %}" class="btn btn-secondary">На главную</a>
 
@@ -24,6 +23,7 @@
                         <th>Статус</th>
                         <th>Завтрак</th>
                         <th>Непереносимость Продуктов</th>
+                        <th>Действия</th>  <!-- Изменил название столбца -->
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +37,19 @@
                             <td>{{ booking.status }}</td>
                             <td>{{ booking.breakfast|yesno:"Да,Нет" }}</td>
                             <td>{{ booking.product_intolerance }}</td>
+                            <td>  <!-- Добавил ячейку для кнопки -->
+                                <a href="{% url 'edit_booking' booking.id %}" class="btn-edit">Редактировать</a>
+                                <form method="POST" action="{% url 'delete_booking' %}">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn-delete"
+                                            name="delete-booking"
+                                            value="{{ booking.id }}"
+                                            onclick="return confirm('Вы уверены?')">
+                                        Удалить
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

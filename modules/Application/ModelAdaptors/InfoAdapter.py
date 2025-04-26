@@ -41,18 +41,18 @@ class BookingRepository(ABC):
     #     """
     #     pass
     #
-    # @abstractmethod
-    # def delete(self, id: int) -> bool:
-    #     """
-    #     Удаляет запись из базы данных по идентификатору.
-    #
-    #     Args:
-    #         id: Идентификатор записи.
-    #
-    #     Returns:
-    #         True, если запись успешно удалена, False в противном случае.
-    #     """
-    #     pass
+    @abstractmethod
+    def delete(self, id: int) -> bool:
+        """
+        Удаляет запись из базы данных по идентификатору.
+
+        Args:
+            id: Идентификатор записи.
+
+        Returns:
+            True, если запись успешно удалена, False в противном случае.
+        """
+        pass
 
     @abstractmethod
     def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:

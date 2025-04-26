@@ -1,8 +1,10 @@
 from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.messages import error
 from django.core.exceptions import ValidationError
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
@@ -10,7 +12,7 @@ from modules.Infrastructure.orm.booking.booking_manage import DjangoBookingRepos
 from modules.Domain.Services.PaymentBookingService import PaymentService
 from modules.Domain.Services.PaymentBookingService import PaymentBookingService
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from modules.Entities.Customer import Customer
 from modules.Entities.Booking import Booking, BookingStatus, determine_booking_status
 from modules.Entities.Room import Room
@@ -30,15 +32,13 @@ def get_index_view(request):
         surname = request.POST.get("surname", "").strip()
 
         try:
-            # Валидация входных данных
             if not name or not surname:
                 raise ValidationError("Имя и фамилия обязательны.")
 
-            # Поиск клиента через адаптер
             adapter = InfoAdapter()
             customer_info = adapter.get_customer_info(name, surname)
+            print(customer_info)
 
-            # Сохранение данных в сессии
             request.session["customer_data"] = customer_info
 
         except (ValidationError, ValueError) as e:
@@ -46,11 +46,9 @@ def get_index_view(request):
         except Exception as e:
             error_message = "Внутренняя ошибка сервера."
 
-        # Сохранение ошибки
         if error_message:
             request.session["error_message"] = error_message
 
-    # Извлечение данных из сессии (независимо от типа запроса)
     customer_data = request.session.pop("customer_data", None)
     error_message = request.session.pop("error_message", None)
 
@@ -58,7 +56,7 @@ def get_index_view(request):
         "customer": customer_data,
         "error": error_message
     }
-    # Выбор шаблона
+
     template = "index_client.html"
     return render(request, template, customer)
 
@@ -114,6 +112,63 @@ def create_booking(request: HttpRequest):
             })
 
     return render(request, "booking/create_booking.html")
+
+
+def delete_booking(request: HttpRequest):
+    if request.method == "POST":
+        try:
+            # Получаем ID из значения кнопки
+            booking_id = int(request.POST.get("delete-booking"))
+            repo = DjangoBookingRepository()
+            repo.delete(booking_id)
+            return redirect("booking_manager")  # Убедитесь, что имя URL 'index' существует
+        except ValueError as e:
+            # Обработка ошибки (можно добавить сообщение пользователю)
+            messages.error(request, str(e))
+            return redirect("index")  # Редирект на предыдущую страницу
+        except Exception as e:
+            messages.error(request, "Произошла ошибка при удалении")
+            return redirect("index")
+    return HttpResponseNotAllowed(["POST"])
+
+
+def edit_booking(request: HttpRequest, booking_id: int):
+    repo = DjangoBookingRepository()
+
+    if request.method == "GET":
+        try:
+            booking = repo.get_by_id(booking_id)
+            print("Переход на edit:", booking)
+            return render(request, 'booking/edit.html', {'booking': booking})
+        except Exception as e:
+            print("Ошибка при получении бронирования:", str(e))  # Дополнительный вывод
+            error(request, f"Произошла ошибка: {str(e)}")
+            return redirect('index')
+
+    elif request.method == "POST":
+        try:
+            print("Полученные данные:", request.POST.dict())
+            update_data = {
+                'customer_name': request.POST.get('customer_name'),
+                'customer_surname': request.POST.get('customer_surname'),
+                'room_number': request.POST.get('room_number'),
+                'check_in_date': request.POST.get('check_in_date'),
+                'check_out_date': request.POST.get('check_out_date'),
+                'status': 'waiting',
+                'breakfast': 'breakfast' in request.POST,
+                'product_intolerance': request.POST.get('product_intolerance')
+            }
+
+            repo.update(booking_id, update_data)
+            print("Изменения сохранены")
+            return redirect('booking_manager')
+
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect('edit_booking', booking_id=booking_id)
+
+    return HttpResponseNotAllowed(["GET", "POST"])
+
 
 
 def _parse_customer_data(post_data) -> Customer:

@@ -1,3 +1,4 @@
+import traceback
 from typing import Dict, Any, List, Optional
 from modules.Domain.Models.BookingPreparationInterface import BookingPreparation
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +18,7 @@ class InfoAdapter(BookingPreparation):
                 "name": customer.name,
                 "surname": customer.surname,
                 "age": customer.age,
-                "passport": customer.passport_id,
+                "passport": f"{customer.passport_id["series"]} / {customer.passport_id["number"]}",
                 "gender": customer.gender
             }
         except ObjectDoesNotExist:
@@ -87,6 +88,39 @@ class DjangoBookingRepository(BookingRepository):
             raise ValueError("Комната не найдена")
         except Exception as e:
             raise ValueError(f"Ошибка при создании бронирования: {str(e)}")
+
+    def get_by_id(self, booking_id: int) -> BookingModel:
+        try:
+            return BookingModel.objects.get(id=booking_id)
+        except BookingModel.DoesNotExist:
+            raise ValueError("Бронирование не найдено")
+
+    def delete(self, booking_id: int) -> bool:
+        try:
+            booking = BookingModel.objects.get(id=booking_id)  # Используйте get вместо filter
+            booking.delete()
+            return True
+        except BookingModel.DoesNotExist:  # Конкретное исключение
+            raise ValueError("Бронирование не найдено")
+
+    def update(self, booking_id: int, update_data: dict) -> BookingModel:
+        try:
+            booking = BookingModel.objects.get(id=booking_id)
+            print("Нашли объект:", booking)
+            for field, value in update_data.items():
+                setattr(booking, field, value)
+                print(f"Установлено значение {field}: {value}")
+            booking.save()
+            print("Запись успешно сохранена.")
+            return booking
+        except BookingModel.DoesNotExist:
+            print("Объект не найден!")
+            raise ValueError("Бронь не найдена.")
+        except Exception as e:
+            print("Ошибка при обновлении:", str(e))
+            traceback.print_exc()
+            raise RuntimeError(f"Ошибка обновления: {str(e)}")
+
 
     def list(self, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         queryset = BookingModel.objects.all().select_related('customer', 'room').prefetch_related(
